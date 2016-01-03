@@ -22,24 +22,6 @@ UPDATE z
  WHERE key = 'foo';
 
 --
--- zrank
---
-CREATE OR REPLACE FUNCTION zrank(key TEXT, member TEXT)
-  RETURNS INTEGER AS
-$$
-  SELECT zrank_impl($1, $2, false);
-$$ LANGUAGE SQL;
-
---
--- zrevrank
---
-CREATE OR REPLACE FUNCTION zrevrank(key TEXT, member TEXT)
-  RETURNS INTEGER AS
-$$
-  SELECT zrank_impl($1, $2, true);
-$$ LANGUAGE SQL;
-
---
 -- zrank_impl
 --
 CREATE OR REPLACE FUNCTION zrank_impl(key TEXT, member TEXT, reverse BOOLEAN)
@@ -103,21 +85,21 @@ $$
 LANGUAGE 'plpythonu' TRANSFORM FOR TYPE hstore;
 
 --
--- zrange
+-- zrank
 --
-CREATE OR REPLACE FUNCTION zrange(key TEXT, start INTEGER, "end" INTEGER)
-  RETURNS SETOF TEXT AS
+CREATE OR REPLACE FUNCTION zrank(key TEXT, member TEXT)
+  RETURNS INTEGER AS
 $$
-  SELECT zrange_impl($1, $2, $3, false);
+  SELECT zrank_impl($1, $2, false);
 $$ LANGUAGE SQL;
 
 --
--- zrevrange
+-- zrevrank
 --
-CREATE OR REPLACE FUNCTION zrevrange(key TEXT, start INTEGER, "end" INTEGER)
-  RETURNS SETOF TEXT AS
+CREATE OR REPLACE FUNCTION zrevrank(key TEXT, member TEXT)
+  RETURNS INTEGER AS
 $$
-  SELECT zrange_impl($1, $2, $3, true);
+  SELECT zrank_impl($1, $2, true);
 $$ LANGUAGE SQL;
 
 --
@@ -155,6 +137,24 @@ $$
     return members
 $$
 LANGUAGE 'plpythonu' TRANSFORM FOR TYPE hstore;
+
+--
+-- zrange
+--
+CREATE OR REPLACE FUNCTION zrange(key TEXT, start INTEGER, "end" INTEGER)
+  RETURNS SETOF TEXT AS
+$$
+  SELECT zrange_impl($1, $2, $3, false);
+$$ LANGUAGE SQL;
+
+--
+-- zrevrange
+--
+CREATE OR REPLACE FUNCTION zrevrange(key TEXT, start INTEGER, "end" INTEGER)
+  RETURNS SETOF TEXT AS
+$$
+  SELECT zrange_impl($1, $2, $3, true);
+$$ LANGUAGE SQL;
 
 SET client_min_messages = ERROR;
 SET log_min_messages = ERROR;
